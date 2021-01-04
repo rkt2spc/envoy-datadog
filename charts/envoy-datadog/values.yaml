@@ -1,0 +1,41 @@
+deployment:
+  podAnnotations: {}
+  podSecurityContext: {}
+  tolerations: {}
+  containers:
+    envoy:
+      image:
+        repository: docker.io/rocketspacer/envoy-datadog
+        pullPolicy: IfNotPresent
+        tag: latest
+      env:
+      - name: loglevel
+        value: info
+      - name: DOGSTATSD_ADDRESS
+        valueFrom:
+          fieldRef:
+            fieldPath: status.hostIP
+      securityContext: {}
+      resources:
+        limits:
+          cpu: 200m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 90
+  targetMemoryUtilizationPercentage: 90
+
+serviceAccount:
+  create: true
+  annotations: {}
+
+service:
+  create: true
+  type: ClusterIP
+  port: 8080
