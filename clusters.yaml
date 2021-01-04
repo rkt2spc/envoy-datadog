@@ -1,0 +1,17 @@
+resources:
+  - "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+    name: upstream
+    type: LOGICAL_DNS
+    connect_timeout: 10.00s
+    # Uncomment this if you're not proxying to https
+    # transport_socket:
+    #   name: envoy.transport_sockets.tls
+    load_assignment:
+      cluster_name: upstream
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: $UPSTREAM_HOST
+                    port_value: $UPSTREAM_PORT

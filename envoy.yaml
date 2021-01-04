@@ -1,0 +1,40 @@
+# https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/bootstrap/v3/bootstrap.proto
+# Envoy bootstrap config
+
+# https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/core/v3/base.proto#config-core-v3-node
+node:
+  id: envoy-datadog
+  cluster: envoy-datadog
+
+# https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/bootstrap/v3/bootstrap.proto#config-bootstrap-v3-admin
+admin:
+  access_log_path: /dev/null
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 8081
+
+# https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/bootstrap/v3/bootstrap.proto#config-bootstrap-v3-bootstrap-dynamicresources
+dynamic_resources:
+  lds_config:
+    resource_api_version: V3
+    path: /etc/envoy/listeners.yaml
+  cds_config:
+    resource_api_version: V3
+    path: /etc/envoy/clusters.yaml
+
+# https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/metrics/v3/stats.proto#config-metrics-v3-statssink
+stats_sinks:
+  - name: envoy.stat_sinks.dog_statsd
+    typed_config:
+      "@type": type.googleapis.com/envoy.config.metrics.v3.DogStatsdSink
+      address:
+        socket_address:
+          address: $DOGSTATSD_ADDRESS
+          port_value: $DOGSTATSD_PORT
+          protocol: $DOGSTATSD_PROTOCOL
+      prefix: envoy-datadog
+
+# https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/metrics/v3/stats.proto#config-metrics-v3-statsconfig
+stats_config:
+  use_all_default_tags: true
